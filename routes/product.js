@@ -9,17 +9,28 @@ const {
 } = require("../controllers/product");
 
 router.get("/", async (req, res) => {
-    const category = req.query.category;
-    const products = await getProducts(category);
+    try {
+        const category = req.query.category;
+        const page = req.query.page;
+        const products = await getProducts(category, page);
 
-    res.status(200).send(products);
+        res.status(200).send(products);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({message: "Unknown error"});
+    }
 });
 
 router.get("/:id", async (req, res) => {
-    const id = req.params.id;
-    const product = await getProduct(id);
+    try {
+        const id = req.params.id;
+        const product = await getProduct(id);
 
-    res.status(200).send(product);
+        res.status(200).send(product);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({message: "Unknown error"});
+    }
 });
 
 router.post("/", async (req, res) => {
@@ -39,6 +50,7 @@ router.post("/", async (req, res) => {
             await addProduct(name, description, price, category)
         );
     } catch (error) {
+        console.log(error);
         res.status(400).send({ message: "Unknown error" });
     }
 });
@@ -61,6 +73,7 @@ router.put("/:id", async (req, res) => {
             await updateProduct(id, name, description, price, category)
         );
     } catch (error) {
+        console.log(error);
         res.status(400).send({ message: "Unknown Error" });
     }
 });
@@ -73,6 +86,7 @@ router.delete("/:id", async (req, res) => {
             message: `Product with the id of ${id} has been deleted`,
         });
     } catch (error) {
+        console.log(error);
         res.status(400).send({ message: "Unknown Error" });
     }
 });
