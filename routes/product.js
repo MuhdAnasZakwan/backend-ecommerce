@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { isAdmin } = require("../middleware/auth");
 const {
     getProducts,
     getProduct,
@@ -17,7 +18,7 @@ router.get("/", async (req, res) => {
         res.status(200).send(products);
     } catch (error) {
         console.log(error);
-        res.status(400).send({message: "Unknown error"});
+        res.status(400).send({ message: "Unknown error" });
     }
 });
 
@@ -29,16 +30,17 @@ router.get("/:id", async (req, res) => {
         res.status(200).send(product);
     } catch (error) {
         console.log(error);
-        res.status(400).send({message: "Unknown error"});
+        res.status(400).send({ message: "Unknown error" });
     }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", isAdmin, async (req, res) => {
     try {
         const name = req.body.name;
         const description = req.body.description;
         const price = req.body.price;
         const category = req.body.category;
+        const image = req.body.image;
 
         if (!name || !price || !category) {
             return res.status(400).send({
@@ -47,7 +49,7 @@ router.post("/", async (req, res) => {
         }
 
         res.status(200).send(
-            await addProduct(name, description, price, category)
+            await addProduct(name, description, price, category, image)
         );
     } catch (error) {
         console.log(error);
@@ -55,13 +57,14 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", isAdmin, async (req, res) => {
     try {
         const id = req.params.id;
         const name = req.body.name;
         const description = req.body.description;
         const price = req.body.price;
         const category = req.body.category;
+        const image = req.body.image;
 
         if (!name || !price || !category) {
             return res.status(400).send({
@@ -70,7 +73,7 @@ router.put("/:id", async (req, res) => {
         }
 
         res.status(200).send(
-            await updateProduct(id, name, description, price, category)
+            await updateProduct(id, name, description, price, category, image)
         );
     } catch (error) {
         console.log(error);
@@ -78,7 +81,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isAdmin, async (req, res) => {
     try {
         const id = req.params.id;
         await deleteProduct(id);

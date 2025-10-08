@@ -9,9 +9,11 @@ const {
     deleteOrder,
 } = require("../controllers/order");
 
-router.get("/", async (req, res) => {
+const {isValidUser, isAdmin} = require("../middleware/auth");
+
+router.get("/", isValidUser, async (req, res) => {
     try {
-        const orders = await getOrders();
+        const orders = await getOrders(req.user);
         res.status(200).send(orders);
     } catch (error) {
         console.log(error);
@@ -51,7 +53,7 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", isAdmin, async (req, res) => {
     try {
         const id = req.params.id;
         const status = req.body.status;
@@ -63,7 +65,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isAdmin, async (req, res) => {
     try {
         const id = req.params.id;
         await deleteOrder(id);

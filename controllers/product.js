@@ -7,6 +7,7 @@ async function getProducts(category, page = 1, itemsPerPage = 6) {
     }
 
     const products = await Product.find(filter)
+        .populate("category")
         .limit(itemsPerPage)
         .skip((page - 1) * itemsPerPage)
         .sort({ _id: -1 });
@@ -18,18 +19,19 @@ async function getProduct(id) {
     return product;
 }
 
-async function addProduct(name, description, price, category) {
+async function addProduct(name, description, price, category, image) {
     const newProduct = new Product({
         name: name,
         description: description,
         price: price,
         category: category,
+        image,
     });
     await newProduct.save();
     return newProduct;
 }
 
-async function updateProduct(id, name, description, price, category) {
+async function updateProduct(id, name, description, price, category, image) {
     return await Product.findByIdAndUpdate(
         id,
         {
@@ -37,6 +39,7 @@ async function updateProduct(id, name, description, price, category) {
             description: description,
             price: price,
             category: category,
+            image
         },
         {
             new: true,
